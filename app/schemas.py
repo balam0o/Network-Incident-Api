@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from app.models import IncidentSeverity, IncidentStatus
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -26,3 +26,28 @@ class AssetRead(BaseModel):
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+class IncidentCreate(BaseModel):
+    title: str = Field(min_length=3, max_length=150)
+    description: str = Field(min_length=5)
+    severity: IncidentSeverity
+    asset_id: int
+
+class IncidentRead(BaseModel):
+    id: int
+    title: str
+    description: str
+    severity: str
+    status: str
+    asset_id: int
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+class IncidentUpdate(BaseModel):
+    title: str | None = Field(default=None, min_length=3, max_length=150)
+    description: str | None = Field(default=None, min_length=5)
+    severity: IncidentSeverity | None = None
+    status: IncidentStatus | None = None
+    asset_id: int | None = None
