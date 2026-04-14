@@ -2,15 +2,19 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
-from app.deps import get_db
-from app.models import Asset
+from app.deps import get_current_user, get_db
+from app.models import Asset, User
 from app.schemas import AssetCreate, AssetRead, AssetUpdate
 
 router = APIRouter(prefix="/assets", tags=["assets"])
 
 
 @router.post("/", response_model=AssetRead, status_code=status.HTTP_201_CREATED)
-def create_asset(payload: AssetCreate, db: Session = Depends(get_db)):
+def create_asset(
+    payload: AssetCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     existing_asset = db.scalar(
         select(Asset).where(
             or_(
@@ -34,15 +38,20 @@ def create_asset(payload: AssetCreate, db: Session = Depends(get_db)):
 
 
 @router.get("/", response_model=list[AssetRead])
-def list_assets(db: Session = Depends(get_db)):
-    assets = db.scalars(
-        select(Asset).order_by(Asset.created_at.desc())
-    ).all()
+def list_assets(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    assets = db.scalars(select(Asset).order_by(Asset.created_at.desc())).all()
     return assets
 
 
 @router.get("/{asset_id}", response_model=AssetRead)
-def get_asset(asset_id: int, db: Session = Depends(get_db)):
+def get_asset(
+    asset_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     asset = db.get(Asset, asset_id)
     if not asset:
         raise HTTPException(status_code=404, detail="Asset not found")
@@ -50,7 +59,12 @@ def get_asset(asset_id: int, db: Session = Depends(get_db)):
 
 
 @router.patch("/{asset_id}", response_model=AssetRead)
-def update_asset(asset_id: int, payload: AssetUpdate, db: Session = Depends(get_db)):
+def update_asset(
+    asset_id: int,
+    payload: AssetUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     asset = db.get(Asset, asset_id)
     if not asset:
         raise HTTPException(status_code=404, detail="Asset not found")
@@ -86,7 +100,11 @@ def update_asset(asset_id: int, payload: AssetUpdate, db: Session = Depends(get_
 
 
 @router.delete("/{asset_id}")
-def delete_asset(asset_id: int, db: Session = Depends(get_db)):
+def delete_asset(
+    asset_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     asset = db.get(Asset, asset_id)
     if not asset:
         raise HTTPException(status_code=404, detail="Asset not found")

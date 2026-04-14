@@ -7,6 +7,9 @@ class Settings(BaseSettings):
     APP_NAME: str = "Network Incident Tracker API"
     DEBUG: bool = True
     DATABASE_URL: str = "postgresql+psycopg://postgres:postgres@localhost:5432/incidents_db"
+    SECRET_KEY: str = "change-this-to-a-long-random-secret-key"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -19,7 +22,5 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     return Settings()
 
-
-settings = get_settings()
 
 settings = get_settings()

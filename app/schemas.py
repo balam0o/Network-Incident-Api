@@ -1,6 +1,29 @@
 from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
 from app.models import IncidentSeverity, IncidentStatus
-from pydantic import BaseModel, ConfigDict, Field
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+
+
+class UserCreate(BaseModel):
+    username: str = Field(min_length=3, max_length=50)
+    email: EmailStr
+    password: str = Field(min_length=8, max_length=128)
+
+
+class UserRead(BaseModel):
+    id: int
+    username: str
+    email: EmailStr
+    role: str
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AssetCreate(BaseModel):
@@ -27,11 +50,21 @@ class AssetRead(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class IncidentCreate(BaseModel):
     title: str = Field(min_length=3, max_length=150)
     description: str = Field(min_length=5)
     severity: IncidentSeverity
     asset_id: int
+
+
+class IncidentUpdate(BaseModel):
+    title: str | None = Field(default=None, min_length=3, max_length=150)
+    description: str | None = Field(default=None, min_length=5)
+    severity: IncidentSeverity | None = None
+    status: IncidentStatus | None = None
+    asset_id: int | None = None
+
 
 class IncidentRead(BaseModel):
     id: int
@@ -44,10 +77,3 @@ class IncidentRead(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
-
-class IncidentUpdate(BaseModel):
-    title: str | None = Field(default=None, min_length=3, max_length=150)
-    description: str | None = Field(default=None, min_length=5)
-    severity: IncidentSeverity | None = None
-    status: IncidentStatus | None = None
-    asset_id: int | None = None

@@ -2,15 +2,19 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.deps import get_db
-from app.models import Asset, Incident, IncidentSeverity, IncidentStatus
+from app.deps import get_current_user, get_db
+from app.models import Asset, Incident, IncidentSeverity, IncidentStatus, User
 from app.schemas import IncidentCreate, IncidentRead, IncidentUpdate
 
 router = APIRouter(prefix="/incidents", tags=["incidents"])
 
 
 @router.post("/", response_model=IncidentRead, status_code=status.HTTP_201_CREATED)
-def create_incident(payload: IncidentCreate, db: Session = Depends(get_db)):
+def create_incident(
+    payload: IncidentCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     asset = db.get(Asset, payload.asset_id)
     if not asset:
         raise HTTPException(status_code=404, detail="Asset not found")
@@ -36,6 +40,7 @@ def list_incidents(
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=20, ge=1, le=100),
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     stmt = select(Incident)
 
@@ -55,7 +60,11 @@ def list_incidents(
 
 
 @router.get("/{incident_id}", response_model=IncidentRead)
-def get_incident(incident_id: int, db: Session = Depends(get_db)):
+def get_incident(
+    incident_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     incident = db.get(Incident, incident_id)
     if not incident:
         raise HTTPException(status_code=404, detail="Incident not found")
@@ -63,7 +72,12 @@ def get_incident(incident_id: int, db: Session = Depends(get_db)):
 
 
 @router.patch("/{incident_id}", response_model=IncidentRead)
-def update_incident(incident_id: int, payload: IncidentUpdate, db: Session = Depends(get_db)):
+def update_incident(
+    incident_id: int,
+    payload: IncidentUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     incident = db.get(Incident, incident_id)
     if not incident:
         raise HTTPException(status_code=404, detail="Incident not found")
@@ -90,7 +104,11 @@ def update_incident(incident_id: int, payload: IncidentUpdate, db: Session = Dep
 
 
 @router.delete("/{incident_id}")
-def delete_incident(incident_id: int, db: Session = Depends(get_db)):
+def delete_incident(
+    incident_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
     incident = db.get(Incident, incident_id)
     if not incident:
         raise HTTPException(status_code=404, detail="Incident not found")
