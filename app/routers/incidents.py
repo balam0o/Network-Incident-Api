@@ -19,12 +19,19 @@ def create_incident(
     if not asset:
         raise HTTPException(status_code=404, detail="Asset not found")
 
+    if payload.assigned_to is not None:
+        assigned_user = db.get(User, payload.assigned_to)
+        if not assigned_user:
+            raise HTTPException(status_code=404, detail="Assigned user not found")
+
     incident = Incident(
         title=payload.title,
         description=payload.description,
         severity=payload.severity.value,
         status=IncidentStatus.open.value,
         asset_id=payload.asset_id,
+        created_by=current_user.id,
+        assigned_to=payload.assigned_to,
     )
     db.add(incident)
     db.commit()
@@ -94,6 +101,11 @@ def update_incident(
         asset = db.get(Asset, data["asset_id"])
         if not asset:
             raise HTTPException(status_code=404, detail="Asset not found")
+
+    if "assigned_to" in data and data["assigned_to"] is not None:
+        assigned_user = db.get(User, data["assigned_to"])
+        if not assigned_user:
+            raise HTTPException(status_code=404, detail="Assigned user not found")
 
     for field, value in data.items():
         setattr(incident, field, value)

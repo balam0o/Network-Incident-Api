@@ -56,6 +56,8 @@ class Incident(Base):
     severity: Mapped[str] = mapped_column(String(20), nullable=False, default=IncidentSeverity.low.value)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default=IncidentStatus.open.value)
     asset_id: Mapped[int] = mapped_column(ForeignKey("assets.id"), nullable=False)
+    created_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    assigned_to: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime,

@@ -56,6 +56,7 @@ class IncidentCreate(BaseModel):
     description: str = Field(min_length=5)
     severity: IncidentSeverity
     asset_id: int
+    assigned_to: int | None = None
 
 
 class IncidentUpdate(BaseModel):
@@ -64,6 +65,7 @@ class IncidentUpdate(BaseModel):
     severity: IncidentSeverity | None = None
     status: IncidentStatus | None = None
     asset_id: int | None = None
+    assigned_to: int | None = None
 
 
 class IncidentRead(BaseModel):
@@ -73,6 +75,8 @@ class IncidentRead(BaseModel):
     severity: str
     status: str
     asset_id: int
+    created_by: int
+    assigned_to: int | None
     created_at: datetime
     updated_at: datetime
 
