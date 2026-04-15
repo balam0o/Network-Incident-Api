@@ -4,8 +4,6 @@ from sqlalchemy.orm import Session
 
 import app.models
 from app.core.config import settings
-from app.db.base import Base
-from app.db.session import engine
 from app.deps import get_db
 from app.routers.assets import router as assets_router
 from app.routers.auth import router as auth_router
@@ -16,12 +14,6 @@ app = FastAPI(
     title=settings.APP_NAME,
     debug=settings.DEBUG,
 )
-
-
-@app.on_event("startup")
-def on_startup():
-    if not settings.TESTING:
-        Base.metadata.create_all(bind=engine)
 
 
 @app.get("/")
