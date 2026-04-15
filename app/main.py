@@ -20,7 +20,8 @@ app = FastAPI(
 
 @app.on_event("startup")
 def on_startup():
-    Base.metadata.create_all(bind=engine)
+    if not settings.TESTING:
+        Base.metadata.create_all(bind=engine)
 
 
 @app.get("/")

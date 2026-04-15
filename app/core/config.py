@@ -6,6 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     APP_NAME: str = "Network Incident Tracker API"
     DEBUG: bool = True
+    TESTING: bool = False
     DATABASE_URL: str = "postgresql+psycopg://postgres:postgres@localhost:5432/incidents_db"
     SECRET_KEY: str = "change-this-to-a-long-random-secret-key"
     ALGORITHM: str = "HS256"
