@@ -81,3 +81,10 @@ class IncidentRead(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+class StatsSummary(BaseModel):
+    total_incidents: int
+    open_incidents: int
+    in_progress_incidents: int
+    closed_incidents: int
+    critical_incidents: int

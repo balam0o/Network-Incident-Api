@@ -10,6 +10,7 @@ from app.deps import get_db
 from app.routers.assets import router as assets_router
 from app.routers.auth import router as auth_router
 from app.routers.incidents import router as incidents_router
+from app.routers.stats import router as stats_router
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -36,3 +37,4 @@ def db_health(db: Session = Depends(get_db)):
 app.include_router(auth_router)
 app.include_router(assets_router)
 app.include_router(incidents_router)
+app.include_router(stats_router)
