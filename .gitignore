@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 .env
 .pytest_cache/
+test.db
+test_assets.db
+test_incidents.db
+*.db
